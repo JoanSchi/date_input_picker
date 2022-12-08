@@ -47,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('tttt ${MaterialLocalizations.of(context).dateSeparator}');
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //

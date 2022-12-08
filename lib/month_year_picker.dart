@@ -15,7 +15,6 @@ class Calculator {
   int addOne(int value) => value + 1;
 }
 
-typedef void SelectDateTimeCallback(DateTime dateTime);
 // const double _kDatePickerHeaderPortraitHeight = 100.0;
 const double _kDatePickerHeaderLandscapeWidth = 220.0;
 const double _monthNavButtonsWidth = 108.0;

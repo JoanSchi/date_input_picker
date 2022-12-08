@@ -1,9 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-
 import 'date_utils.dart';
 import 'month_year_picker.dart';
 
@@ -14,16 +11,18 @@ class MonthYearInputPicker extends StatefulWidget {
   final ValueChanged<DateTime?>? changeDate;
   final ValueChanged<DateTime?>? saveDate;
   final TextInputType? textInputType;
+  final List<String> dateDividers;
 
-  const MonthYearInputPicker({
-    Key? key,
-    required this.date,
-    required this.firstDate,
-    required this.lastDate,
-    required this.changeDate,
-    required this.saveDate,
-    this.textInputType,
-  }) : super(key: key);
+  const MonthYearInputPicker(
+      {Key? key,
+      required this.date,
+      required this.firstDate,
+      required this.lastDate,
+      required this.changeDate,
+      required this.saveDate,
+      this.textInputType,
+      this.dateDividers = const ['-', '/']})
+      : super(key: key);
 
   @override
   State<MonthYearInputPicker> createState() => _MonthYearInputPickerState();
@@ -32,16 +31,40 @@ class MonthYearInputPicker extends StatefulWidget {
 class _MonthYearInputPickerState extends State<MonthYearInputPicker> {
   late DateTime? _date = widget.date;
   late TextEditingController _dateController;
-  final regExpDateInput = RegExp(r'^[0-9]{1,2}([-|.][0-9]{0,4})?');
-  final regExpDateValidate = RegExp(r'^[0-9]{1,2}([-|.][0-9]{2,4})');
+  late RegExp regExpDateInput = RegExp(r'^[0-9]{1,2}([-|.][0-9]{0,4})?');
+  late RegExp regExpDateValidate = RegExp(r'^[0-9]{1,2}([-|.][0-9]{2,4})');
+  late RegExp regExpShowDivider = RegExp(r'^[0-9]{1,2}$');
   final FocusNode _dateNode = FocusNode();
   bool showDivider = false;
+  late String divider;
 
   @override
   void initState() {
-    _dateController =
-        TextEditingController(text: '${_date?.month}-${_date?.year}');
+    setDividers();
+    _dateController = TextEditingController(text: dateToMonthYearText(_date));
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(MonthYearInputPicker oldWidget) {
+    setDividers();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  setDividers() {
+    List<String> dateDividers = widget.dateDividers;
+    int length = dateDividers.length;
+    int i = 0;
+
+    String regDivider = divider = (length < 0) ? '/' : dateDividers[0];
+
+    while (i < length) {
+      regDivider += '|${dateDividers[i++]}';
+    }
+
+    regExpDateInput = RegExp(r'^[0-9]{1,2}([' + regDivider + r'][0-9]{0,4})?');
+    regExpDateValidate =
+        RegExp(r'^[0-9]{1,2}([' + regDivider + r'][0-9]{2,4})');
   }
 
   @override
@@ -138,18 +161,25 @@ class _MonthYearInputPickerState extends State<MonthYearInputPicker> {
   }
 
   void checkDivider(String value) {
-    final d = value.isNotEmpty && !value.contains('-');
+    bool show = regExpShowDivider.hasMatch(value);
 
-    if (d != showDivider) {
+    if (show != showDivider) {
       setState(() {
-        showDivider = d;
+        showDivider = show;
       });
     }
   }
 
+  String dateToMonthYearText(DateTime? value) {
+    return value == null
+        ? ''
+        : '${value.month < 9 ? '0' : 0}${value.month}$divider${value.year}';
+  }
+
   setDateFromPicker(DateTime value) {
     _date = value;
-    _dateController.text = '${value.month}-${value.year}';
+
+    _dateController.text = dateToMonthYearText(value);
 
     widget.changeDate?.call(value);
 
@@ -165,8 +195,17 @@ class _MonthYearInputPickerState extends State<MonthYearInputPicker> {
   MonthYearValidated validateDate(String? value) {
     if (value != null) {
       if (value.startsWith(regExpDateValidate)) {
-        List<String> split =
-            value.contains('-') ? value.split('-') : value.split('.');
+        List<String> split = [];
+        for (String d in widget.dateDividers) {
+          if (value.contains(d)) {
+            split = value.split(d);
+            break;
+          }
+        }
+
+        if (split.isEmpty) {
+          return MonthYearValidated(error: ' : Try: mm${divider}yyyy');
+        }
 
         int month = int.parse(split[0]);
 
