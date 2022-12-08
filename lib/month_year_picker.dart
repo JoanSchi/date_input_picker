@@ -68,7 +68,7 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
   // YearMonthPickerMode _mode = YearMonthPickerMode.month;
   late DateTime _selectedDate =
       DateTime(widget.initialDate.year, widget.initialDate.month);
-  late DateTime _currentDate = monthYearOnly(DateTime.now());
+  late final DateTime _currentDate = monthYearOnly(DateTime.now());
   late PickerLayout layoutYearPicker;
   late PickerLayout layoutMonthPicker;
 

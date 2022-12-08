@@ -164,7 +164,7 @@ class _MonthPickerState extends State<MonthPicker> {
     } else {
       textColor = colorScheme.onSurface.withOpacity(0.87);
     }
-    TextStyle? itemStyle = textTheme.caption?.apply(color: textColor);
+    TextStyle? itemStyle = textTheme.bodyText1?.apply(color: textColor);
 
     BoxDecoration? decoration;
     if (isSelected) {
@@ -183,14 +183,16 @@ class _MonthPickerState extends State<MonthPicker> {
 
     final monthInText = DateFormat.MMMM(_localeToString(context)).format(date);
 
-    Widget monthItem = Center(
-      child: Container(
-        decoration: decoration,
-        height: decorationHeight,
-        child: Center(
-          child: Semantics(
-            selected: isSelected,
-            child: Text(monthInText, style: itemStyle),
+    Widget monthItem = Padding(
+      padding: const EdgeInsets.all(_monthPickerRowSpacing),
+      child: Center(
+        child: Container(
+          decoration: decoration,
+          child: Center(
+            child: Semantics(
+              selected: isSelected,
+              child: Text(monthInText, style: itemStyle),
+            ),
           ),
         ),
       ),
@@ -201,10 +203,8 @@ class _MonthPickerState extends State<MonthPicker> {
         child: monthItem,
       );
     } else {
-      monthItem = InkResponse(
-        highlightShape: BoxShape.rectangle,
+      monthItem = InkWell(
         splashColor: selectedDayBackground.withOpacity(0.38),
-        radius: heightPickerItem / 3.0 * 2.0,
         key: ValueKey<int>(month),
         onTap: () => widget.onChanged(DateTime(year, month)),
         borderRadius: BorderRadius.circular(heightPickerItem / 2.0),
@@ -289,7 +289,7 @@ class _MonthPickerState extends State<MonthPicker> {
             ],
           ),
         ),
-        Divider(
+        const Divider(
           height: dividerHeight,
         ),
         Expanded(
@@ -301,7 +301,7 @@ class _MonthPickerState extends State<MonthPicker> {
             return monthList(year, widget.pickerLayout.columns);
           },
         )),
-        Divider(
+        const Divider(
           height: dividerHeight,
         ),
       ],
@@ -316,14 +316,12 @@ class _MonthPickerGridDelegate extends SliverGridDelegate {
 
   @override
   SliverGridLayout getLayout(SliverConstraints constraints) {
-    final double tileWidth = (constraints.crossAxisExtent -
-            (columnCount - 1) * _monthPickerRowSpacing) /
-        columnCount;
+    final double tileWidth = (constraints.crossAxisExtent) / columnCount;
     return SliverGridRegularTileLayout(
       childCrossAxisExtent: tileWidth,
       childMainAxisExtent: heightPickerItem,
       crossAxisCount: columnCount,
-      crossAxisStride: tileWidth + _monthPickerRowSpacing,
+      crossAxisStride: tileWidth,
       mainAxisStride: heightPickerItem,
       reverseCrossAxis: axisDirectionIsReversed(constraints.crossAxisDirection),
     );

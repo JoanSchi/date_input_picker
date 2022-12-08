@@ -134,7 +134,7 @@ class _MyYearPickerState extends State<MyYearPicker> {
     } else {
       textColor = colorScheme.onSurface.withOpacity(0.87);
     }
-    final TextStyle? itemStyle = textTheme.bodyText2?.apply(color: textColor);
+    final TextStyle? itemStyle = textTheme.bodyText1?.apply(color: textColor);
 
     BoxDecoration? decoration;
     if (isSelected) {
@@ -170,8 +170,7 @@ class _MyYearPickerState extends State<MyYearPicker> {
         child: yearItem,
       );
     } else {
-      yearItem = InkResponse(
-        highlightShape: BoxShape.rectangle,
+      yearItem = InkWell(
         splashColor: selectedDayBackground.withOpacity(0.38),
         radius: heightPickerItem / 3.0 * 2.0,
         key: ValueKey<int>(year),

@@ -173,7 +173,7 @@ class _MonthYearInputPickerState extends State<MonthYearInputPicker> {
   String dateToMonthYearText(DateTime? value) {
     return value == null
         ? ''
-        : '${value.month < 9 ? '0' : 0}${value.month}$divider${value.year}';
+        : '${value.month < 9 ? '0' : ''}${value.month}$divider${value.year}';
   }
 
   setDateFromPicker(DateTime value) {
