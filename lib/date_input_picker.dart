@@ -466,25 +466,45 @@ class _DateInputPickerState extends State<DateInputPicker> {
       }
 
       int missing = order.length - numbers.length;
+      bool yearMissing;
+      bool monthMissing;
 
-      if (missing < 0) {
-        return DateValidated(error: 'To many Argu');
+      switch (missing) {
+        case 2:
+          {
+            yearMissing = true;
+            monthMissing = true;
+            break;
+          }
+        case 1:
+          {
+            yearMissing = true;
+            monthMissing = false;
+            break;
+          }
+        case 0:
+          {
+            yearMissing = false;
+            monthMissing = false;
+            break;
+          }
+        default:
+          {
+            return DateValidated(error: 'To many Arguments');
+          }
       }
 
       int j = 0;
       for (int i = 0; i < order.length; i++) {
         String? o = order[i];
-        print('i $i');
 
         if (o == null) {
           return DateValidated(error: '?');
-        } else if (o == 'y' && missing > 0) {
+        } else if (o == 'y' && yearMissing) {
           year = DateTime.now().year;
-          missing--;
           continue;
-        } else if ((o == 'M' || o == 'MM') && missing > 0) {
+        } else if ((o == 'M' || o == 'MM') && monthMissing) {
           month = DateTime.now().month;
-          missing--;
           continue;
         }
 
