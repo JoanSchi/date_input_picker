@@ -120,6 +120,7 @@ class _DateInputPickerState extends State<DateInputPicker> {
     setDividers();
 
     if (oldDivider != divider ||
+        oldWidget.dividerVisible != widget.dividerVisible ||
         oldWidget.iconSize != widget.iconSize ||
         oldWidget.dividerIcon != widget.dividerIcon) {
       setIconDivider();
@@ -287,6 +288,8 @@ class _DateInputPickerState extends State<DateInputPicker> {
       } else {
         iconDivider = null;
       }
+    } else {
+      iconDivider = null;
     }
   }
 
@@ -384,15 +387,15 @@ class _DateInputPickerState extends State<DateInputPicker> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(child: textField),
-        dividerButton != null
-            ? Focus(
-                skipTraversal: true,
-                descendantsAreFocusable: false,
-                child: AnimatedSwitcher(
+        Focus(
+            skipTraversal: true,
+            descendantsAreFocusable: false,
+            descendantsAreTraversable: false,
+            child: dividerButton != null
+                ? AnimatedSwitcher(
                     duration: const Duration(milliseconds: 200),
-                    child: dividerVisible ? dividerButton : picker),
-              )
-            : picker
+                    child: dividerVisible ? dividerButton : picker)
+                : picker)
       ],
     );
   }
@@ -466,32 +469,13 @@ class _DateInputPickerState extends State<DateInputPicker> {
       }
 
       int missing = order.length - numbers.length;
-      bool yearMissing;
-      bool monthMissing;
 
-      switch (missing) {
-        case 2:
-          {
-            yearMissing = true;
-            monthMissing = true;
-            break;
-          }
-        case 1:
-          {
-            yearMissing = true;
-            monthMissing = false;
-            break;
-          }
-        case 0:
-          {
-            yearMissing = false;
-            monthMissing = false;
-            break;
-          }
-        default:
-          {
-            return DateValidated(error: 'To many Arguments');
-          }
+      bool yearMissing = missing >= 1;
+      bool monthMissing = missing >= 2;
+      bool dayMissing = missing == 3;
+
+      if (missing < 0) {
+        return DateValidated(error: 'To many Arguments');
       }
 
       int j = 0;
@@ -500,6 +484,9 @@ class _DateInputPickerState extends State<DateInputPicker> {
 
         if (o == null) {
           return DateValidated(error: '?');
+        } else if ((o == 'd' || o == 'dd') && dayMissing) {
+          day = DateTime.now().day;
+          continue;
         } else if (o == 'y' && yearMissing) {
           year = DateTime.now().year;
           continue;
@@ -528,7 +515,7 @@ class _DateInputPickerState extends State<DateInputPicker> {
       debugPrint('day: $day, month: $month, year; $year');
 
       if (day == -1 || month == -1 || year == -1) {
-        return DateValidated(error: 'error');
+        return DateValidated(error: widget.formatHint);
       } else if (month > 12) {
         return DateValidated(error: 'M: 1..12');
       } else if (day < 1) {
@@ -539,7 +526,7 @@ class _DateInputPickerState extends State<DateInputPicker> {
       } else {
         DateTime dateFromInput = DateTime(year, month, day);
 
-        debugPrint('dateFromInput to string ${dateFromInput}');
+        debugPrint('dateFromInput to string $dateFromInput');
 
         if (DateUtils.monthDelta(widget.firstDate, dateFromInput) < 0 ||
             DateUtils.monthDelta(widget.lastDate, dateFromInput) > 0) {
@@ -559,7 +546,7 @@ class _DateInputPickerState extends State<DateInputPicker> {
         }
       }
     }
-    return DateValidated(error: '?');
+    return DateValidated(error: widget.formatHint);
   }
 }
 

@@ -3,7 +3,6 @@ library month_year_picker;
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/date_time_patterns.dart';
 import 'package:intl/intl.dart';
 import 'src/month_picker.dart';
 import 'src/month_year_layout.dart';
