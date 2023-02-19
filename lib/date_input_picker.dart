@@ -132,7 +132,8 @@ class _DateInputPickerState extends State<DateInputPicker> {
       _dateNode.removeListener(focusListener);
     }
 
-    if (oldFormat != format) {
+    if (oldFormat != format || _date != widget.date) {
+      _date = widget.date;
       _dateController = TextEditingController(text: dateToText(_date))
         ..selection
         ..addListener(selectionListener);
