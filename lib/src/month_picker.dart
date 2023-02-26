@@ -24,7 +24,6 @@ class MonthPicker extends StatefulWidget {
   final ValueChanged<DateTime> onChanged;
   final ValueChanged<int> onSwipeYear;
   final DragStartBehavior dragStartBehavior;
-  final List<DateTime> disableDate;
   final PickerLayout pickerLayout;
 
   MonthPicker({
@@ -37,7 +36,6 @@ class MonthPicker extends StatefulWidget {
     required this.selectedDate,
     required this.onChanged,
     required this.onSwipeYear,
-    this.disableDate = const <DateTime>[],
     this.dragStartBehavior = DragStartBehavior.start,
   })  : assert(!firstDate.isAfter(lastDate)),
         currentDate = DateUtils.dateOnly(currentDate ?? DateTime.now()),
@@ -75,9 +73,6 @@ class _MonthPickerState extends State<MonthPicker> {
         });
       }
     });
-  late List<DateTime> disabledMonths = widget.disableDate
-      .where((DateTime element) => element.year == widget.selectedDate.year)
-      .toList();
 
   late MaterialLocalizations localizations = MaterialLocalizations.of(context);
 
@@ -177,6 +172,7 @@ class _MonthPickerState extends State<MonthPicker> {
                         year: year,
                         columns: widget.pickerLayout.columns,
                         onChanged: widget.onChanged,
+                        dragStartBehavior: widget.dragStartBehavior,
                       );
                     })));
           },
@@ -222,17 +218,19 @@ class _Months extends StatefulWidget {
   final int columns;
   final double height;
   final ValueChanged<DateTime> onChanged;
+  final DragStartBehavior dragStartBehavior;
 
   const _Months({
     Key? key,
-    required this.height,
     required this.firstDate,
     required this.lastDate,
     required this.selectedDate,
     required this.currentDate,
     required this.year,
     required this.columns,
+    required this.height,
     required this.onChanged,
+    required this.dragStartBehavior,
   }) : super(key: key);
 
   @override
@@ -285,7 +283,7 @@ class _MonthsState extends State<_Months> {
   Widget build(BuildContext context) {
     return GridView.builder(
       controller: _scrollController,
-      // dragStartBehavior: widget.dragStartBehavior,
+      dragStartBehavior: widget.dragStartBehavior,
       gridDelegate: _MonthPickerGridDelegate(widget.columns),
       itemBuilder: (BuildContext context, int index) =>
           _buildMonthItem(context, year: widget.year, month: index + 1),
@@ -304,12 +302,8 @@ class _MonthsState extends State<_Months> {
     final bool isSelected = compareMonths(date, widget.selectedDate) == 0;
     final bool isCurrentMonth = compareMonths(date, widget.currentDate) == 0;
 
-    final bool isDisabled = false;
-    //  = compareMonths(date, widget.firstDate) < 0 ||
-    //     compareMonths(date, widget.lastDate) > 0 ||
-    //     disabledMonths
-    //             .indexWhere((DateTime element) => element.month == month) >
-    //         -1;
+    final bool isDisabled = compareMonths(date, widget.firstDate) < 0 ||
+        compareMonths(date, widget.lastDate) > 0;
 
     final Color selectedDayBackground = colorScheme.primary;
 

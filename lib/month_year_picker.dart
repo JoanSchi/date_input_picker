@@ -262,8 +262,14 @@ class _CalendarPickerState extends State<CalendarPicker> {
   }
 
   void _handleYearChanged(DateTime date) {
+    if (date.compareTo(widget.firstDate) < 0) {
+      date = widget.firstDate;
+    } else if (date.compareTo(widget.lastDate) > 0) {
+      date = widget.lastDate;
+    }
     _mode = YearMonthPickerMode.month;
     _year = date.year;
+
     widget.changeDate(date);
   }
 

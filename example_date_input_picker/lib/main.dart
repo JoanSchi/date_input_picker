@@ -61,12 +61,16 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
     final now = DateTime.now();
 
-    firstDate = DateTime(now.year - 50, 1, 1);
-    lastDate = DateTime(now.year + 50, 1, 1);
-
-    super.initState();
+    firstDate = DateTime(now.year - 50, 5, 1);
+    lastDate = DateTime(now.year + 50, 5, 1);
+    super.didChangeDependencies();
   }
 
   @override
