@@ -18,7 +18,6 @@ class Calculator {
 const double _kDatePickerHeaderLandscapeWidth = 220.0;
 const double _monthNavButtonsWidth = 108.0;
 const double _subHeaderHeight = 52.0;
-const dividerHeight = 8.0;
 const double decorationHeight = 36.0;
 const double decorationBorder = 8.0;
 const double heightPickerItem = decorationHeight + 2.0 * decorationBorder;
@@ -68,8 +67,6 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
   late DateTime _selectedDate =
       DateTime(widget.initialDate.year, widget.initialDate.month);
   late final DateTime _currentDate = monthYearOnly(DateTime.now());
-  late PickerLayout layoutYearPicker;
-  late PickerLayout layoutMonthPicker;
 
   static DateTime monthYearOnly(DateTime date) {
     return DateTime(date.year, date.month, date.day);
@@ -193,9 +190,9 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
         : colorScheme.onSurface;
 
     final TextStyle? yearStyle =
-        theme.textTheme.headline4?.copyWith(color: onPrimarySurface);
+        theme.textTheme.headlineMedium?.copyWith(color: onPrimarySurface);
     final TextStyle? monthStyle =
-        theme.textTheme.headline4?.copyWith(color: onPrimarySurface);
+        theme.textTheme.headlineMedium?.copyWith(color: onPrimarySurface);
 
     Widget year =
         Text(localizations.formatYear(_selectedDate), style: yearStyle);
@@ -463,7 +460,7 @@ class _DatePickerModeToggleButtonState
                         child: Text(
                           widget.title,
                           overflow: TextOverflow.ellipsis,
-                          style: textTheme.subtitle2?.copyWith(
+                          style: textTheme.titleSmall?.copyWith(
                             color: controlColor,
                           ),
                         ),

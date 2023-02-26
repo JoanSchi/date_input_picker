@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:date_input_picker/src/month_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -66,44 +67,19 @@ class _MyYearPickerState extends State<MyYearPicker> {
 
   @override
   void initState() {
-    super.initState();
-    _scrollController = ScrollController(
-        initialScrollOffset: _scrollOffsetForYear(widget.selectedDate));
-  }
-
-  @override
-  void didUpdateWidget(MyYearPicker oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.selectedDate != oldWidget.selectedDate) {
-      // _scrollController.jumpTo(_scrollOffsetForYear(widget.selectedDate));
-    }
-  }
-
-  double _scrollOffsetForYear(DateTime date) {
-    // Move the offset down by 2 rows to approximately center it.
-
     final int firstYear = widget.firstDate.year -
         (_itemCount < minYears ? (minYears - _itemCount) ~/ 2 : 0);
 
-    final int initialYearIndex = date.year - firstYear;
+    final int initialYearIndex = widget.selectedDate.year - firstYear;
     final int initialYearRow = initialYearIndex ~/ widget.pickerLayout.columns;
 
-    double totalHeight = (_itemCount < minYears ? minYears : _itemCount) ~/
-        widget.pickerLayout.columns *
-        heightPickerItem;
+    final initialScrollOffset = math.max(0.0,
+        initialYearRow * heightPickerItem - widget.pickerLayout.height / 3.0);
 
-    int i = initialYearRow;
-    if (i == 2) {
-      i--;
-    } else if (i > 2) {
-      i -= 2;
-    }
+    _scrollController =
+        ScrollController(initialScrollOffset: initialScrollOffset);
 
-    if (widget.pickerLayout.height < totalHeight - i * heightPickerItem) {
-      return i * heightPickerItem;
-    } else {
-      return math.max(0.0, totalHeight - widget.pickerLayout.height);
-    }
+    super.initState();
   }
 
   Widget _buildYearItem(BuildContext context, int index) {
@@ -134,7 +110,7 @@ class _MyYearPickerState extends State<MyYearPicker> {
     } else {
       textColor = colorScheme.onSurface.withOpacity(0.87);
     }
-    final TextStyle? itemStyle = textTheme.bodyText1?.apply(color: textColor);
+    final TextStyle? itemStyle = textTheme.bodyLarge?.apply(color: textColor);
 
     BoxDecoration? decoration;
     if (isSelected) {
